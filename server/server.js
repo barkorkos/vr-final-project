@@ -41,7 +41,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 
 
-app.post('/test', function(req, res){
+app.get('/test', function(req, res){
   var i= 0;
   for (i =0 ; i<1000; i++){
     console.log(i);
