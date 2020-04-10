@@ -52,6 +52,31 @@ app.get('/test', function(req, res){
 });
 
 
+
+app.get('/getActivePatient', function(req, res){
+
+  var query = `select * from PatientInTherapy join Patients on  PatientInTherapy.patientid = Patients.id where "isActive" = true;`
+
+  client.query(query).then(results => {
+    var resultsFound = results.rowCount;
+    if (resultsFound == 1){
+      var data = results.rows[0];
+      res.writeHead(200, {'Content-Type': 'application/json'});
+      res.end(JSON.stringify(data));
+    }
+    else{
+      res.writeHead(400);
+      res.end();
+    }
+}).catch(() => {
+  console.error("DB failed in Login attempt");
+});
+
+  
+});
+
+
+
 // app.listen(port);
 // console.log('Server started! At http://localhost:' + port );  
 var server = app.listen(port, function () {
