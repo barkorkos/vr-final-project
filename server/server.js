@@ -30,6 +30,11 @@ client.connect((err, res) => {
         console.log("Connected!");
 });
 
+
+// Express 4.0
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 // app.use('/signUp',       express.static(path.join(__dirname)));
