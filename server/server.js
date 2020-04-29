@@ -102,6 +102,79 @@ app.post('/savePlayerResults', function(req, res){
 });
 
 
+app.post('/savePlayerRewardTable', function(req, res){
+  console.log(req.body);
+  var query = `update PatientInTherapy set reward_table='`+req.body.rewards_table+`'
+               where  PatientInTherapy.patientid = '`+req.body.id+`' and PatientInTherapy.hand_in_therapy='`+req.body.hand_in_therapy+`' and PatientInTherapy.game_name='`+req.body.game_name+`';`
+  console.log(query);
+
+
+  client.query(query).then(results => {
+
+      console.log(results);
+
+      res.writeHead(200);
+      res.end();
+    }
+).catch(() => {
+  console.error("DB failed in Login attempt");
+  res.writeHead(400);
+  res.end()
+});
+
+  
+});
+
+
+app.post('/savePlayerQTable', function(req, res){
+  console.log(req.body);
+  var query = `update PatientInTherapy set qtable= '`+req.body.qtable+`'
+               where  PatientInTherapy.patientid = '`+req.body.id+`' and PatientInTherapy.hand_in_therapy='`+req.body.hand_in_therapy+`' and PatientInTherapy.game_name='`+req.body.game_name+`';`
+  console.log(query);
+
+
+  client.query(query).then(results => {
+
+      console.log(results);
+
+      res.writeHead(200);
+      res.end();
+    }
+).catch(() => {
+  console.error("DB failed in Login attempt");
+  res.writeHead(400);
+  res.end()
+});
+
+  
+});
+
+
+
+app.post('/savePlayerLastAppearnce', function(req, res){
+  console.log(req.body);
+  var query = `update PatientInTherapy set last_appearance='`+req.body.last_apperance_table+`'
+               where  PatientInTherapy.patientid = '`+req.body.id+`' and PatientInTherapy.hand_in_therapy='`+req.body.hand_in_therapy+`' and PatientInTherapy.game_name='`+req.body.game_name+`';`
+  console.log(query);
+
+
+  client.query(query).then(results => {
+
+      console.log(results);
+
+      res.writeHead(200);
+      res.end();
+    }
+).catch(() => {
+  console.error("DB failed in Login attempt");
+  res.writeHead(400);
+  res.end()
+});
+
+  
+});
+
+
 
 // app.listen(port);
 // console.log('Server started! At http://localhost:' + port );  
