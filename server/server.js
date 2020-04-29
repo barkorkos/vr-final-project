@@ -84,15 +84,14 @@ app.get('/getActivePatient', function(req, res){
 app.post('/savePlayerResults', function(req, res){
   console.log(req.body);
   var query = `update PatientInTherapy set learning_rate=`+req.body.learning_rate+`,discount_factor=`+req.body.discount_factor+`,
-               random_explore=`+req.body.random_explore+`,reward_table='`+req.body.rewards_table+`',qtable= '`+req.body.qtable+`',
-               last_appearance='`+req.body.last_apperance_table+`',"isActive"=false, iterations_number=`+req.body.iterations_number+`
+               random_explore=`+req.body.random_explore+`, "isActive"=false, iterations_number=`+req.body.iterations_number+`
                where  PatientInTherapy.patientid = '`+req.body.id+`' and PatientInTherapy.hand_in_therapy='`+req.body.hand_in_therapy+`' and PatientInTherapy.game_name='`+req.body.game_name+`';`
   console.log(query);
 
 
   client.query(query).then(results => {
 
-      console.log(results);
+      console.log(results); 
 
       res.writeHead(200);
       res.end();
