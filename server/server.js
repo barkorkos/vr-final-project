@@ -8,6 +8,7 @@ var nodemailer=require("nodemailer");
 
 var express = require('express');
 var bodyParser = require('body-parser');
+var cors = require('cors');
 var app = express();
 var port = process.env.PORT || 8080;
 var fs = require('fs');
@@ -30,13 +31,13 @@ client.connect((err, res) => {
         console.log("Connected!");
 });
 
-
+app.use(cors());
 // Express 4.0
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
-app.use(bodyParser.json()); // support json encoded bodies
-app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+// app.use(bodyParser.json()); // support json encoded bodies
+// app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 // app.use('/signUp',       express.static(path.join(__dirname)));
 
 // app.use('',             express.static(path.join(__dirname)));
@@ -58,7 +59,7 @@ app.get('/test', function(req, res){
 
 
 
-app.get('/getActivePatient', function(req, res){
+app.get('/getActivePatient',function(req, res){
   console.log(req.body);
   var query = `select * from PatientInTherapy join Patients on  PatientInTherapy.patientid = Patients.id where "isActive" = true;`
 
@@ -178,7 +179,44 @@ app.post('/savePlayerLastAppearnce', function(req, res){
   
 });
 
+// app.get('/patients', function(req, res){
 
+
+// });
+
+app.post('/patients', function(req, res){
+  console.log("#####");
+  console.log(req.body);
+  var patient = req.body;
+  var query = `INSERT INTO patients (id, first_name, last_name,height, birthday,
+                         email_address, details, address, phone)
+               VALUES ('`+patient.id + `', '` + patient.firstName + `', '`
+                        + patient.lastName +`',` + patient.height +`,'`
+                        + patient.birthday+`','` + patient.email + `','`
+                        + patient.comments+`','` + patient.address + `','` + patient.phone + `');`;
+  console.log(query);
+
+  client.query(query).then(results => {
+    console.log(results);
+    res.json(patient);
+    res.writeHead(200);
+    res.end();
+    }
+  ).catch(() => {
+    console.error("DB failed in Login attempt");
+    res.writeHead(400);
+    res.end()
+  });
+
+  // console.log(req);
+
+});
+
+
+// app.delete('/patients', function(req, res){
+
+
+// });
 
 // app.listen(port);
 // console.log('Server started! At http://localhost:' + port );  
