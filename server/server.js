@@ -184,9 +184,37 @@ app.post('/savePlayerLastAppearnce', function(req, res){
 
 // });
 
+/*update patient details */
+app.patch('/patients/:id/', function(req, res){
+  console.log("###put##");
+ /* console.log(req.body);
+  var patient = req.body;
+  var query = `UPDATE patients 
+               SET id = '`+patient.id+`', first_name = '`+patient.firstName+`',
+                   last_name = '`+patient.lastName+`', height = `+patient.height+`,
+                   birthday = '`+patient.birthday+`', email_address = '`+patient.email+`',
+                   details = '`+patient.comments+`', address = '`+patient.address+`',
+                   phone = '`+patient.phone+`'
+               WHERE id = '`+patient.id+`'`;
+ 
+  console.log(query);
+/*
+  client.query(query).then(results => {
+    console.log(results);
+    res.json(patient);
+    res.writeHead(200);
+    res.end();
+    }
+  ).catch(() => {
+    console.error("DB failed in Login attempt");
+    res.writeHead(400);
+    res.end()
+  });
+
+*/
+});
+
 app.post('/patients', function(req, res){
-  console.log("#####");
-  console.log(req.body);
   var patient = req.body;
   var query = `INSERT INTO patients (id, first_name, last_name,height, birthday,
                          email_address, details, address, phone)
@@ -204,6 +232,7 @@ app.post('/patients', function(req, res){
     }
   ).catch(() => {
     console.error("DB failed in Login attempt");
+    //res.json({'error':'User already Exists'});
     res.writeHead(400);
     res.end()
   });
@@ -213,13 +242,51 @@ app.post('/patients', function(req, res){
 });
 
 
-// app.delete('/patients', function(req, res){
+app.patch('/terapists/:id', function(req, res){
+  var terapist = req.body;
+  console.log(terapist);
+  var query = `UPDATE terapists SET 
+                  first_name = '`+terapist.firstName+`',
+                  last_name = '`+ terapist.lastName+`',
+                  email = '`+terapist.email+`',
+                  address = '`+terapist.address+`',
+                  phone = '`+terapist.phone+`'
+              WHERE user_id='`+terapist.id+`'`;
+  console.log(query);
+  client.query(query).then(results => {
+    console.log(results);
+    res.status(200)
+    res.json(terapist);
+    }
+  ).catch(() => {
+    console.error("DB failed in Login attempt");
+    //res.json({'error':'User already Exists'});
+    res.writeHead(400);
+    res.end()
+  });
 
+});
 
-// });
+app.get('/terapists', function(req, res){
+  terapist_id = req.query.id;
+  var query = `SELECT * FROM terapists WHERE user_id = '`+terapist_id+`'`;
+  console.log(query);
+  client.query(query).then(results => {
+    console.log(results);
+    res.status(200)
+    res.json(results.rows[0]);
+    }
+  ).catch(() => {
+    console.error("DB failed in Login attempt");
+    //res.json({'error':'User already Exists'});
+    res.writeHead(400);
+    res.end()
+  });
 
-// app.listen(port);
-// console.log('Server started! At http://localhost:' + port );  
+  // console.log(req);
+
+});
+
 var server = app.listen(port, function () {
   console.log('Node server is running..');
 });
