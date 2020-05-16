@@ -183,7 +183,97 @@ app.post('/savePlayerLastAppearnce', function(req, res){
 
 
 // });
+/*update patient details */
+app.patch('/patients/:id/', function(req, res){
+  console.log("###put##");
+  console.log(req.body);
+  var patient = req.body;
+  var query = `UPDATE patients 
+               SET id = '`+patient.id+`', first_name = '`+patient.firstName+`',
+                   last_name = '`+patient.lastName+`', height = `+patient.height+`,
+                   birthday = '`+patient.birthday+`', email_address = '`+patient.email+`',
+                   details = '`+patient.comments+`', address = '`+patient.address+`',
+                   phone = '`+patient.phone+`'
+               WHERE id = '`+patient.id+`'`;
+ 
+  console.log(query);
 
+  client.query(query).then(results => {
+    console.log(results);
+
+    res.status(200);
+    res.json(patient);
+    }
+  ).catch(() => {
+    console.error("DB failed in Login attempt");
+    res.writeHead(400);
+    res.end()
+  });
+
+
+});
+
+
+/*serch patient by id and get his details*/
+app.get('/patients', function(req, res){
+  console.log("@@@@@");
+  console.log(req.query);
+  var id = req.query.id;
+  var query1 = `SELECT * from patients where id = '`+id+`'`;
+  console.log(query1);
+
+  var patientsDetails;
+
+  client.query(query1).then(results => {
+    var resultsFound = results.rowCount;
+    console.log(results);
+    if (resultsFound == 1){
+      var data = results.rows[0];
+      console.log(data);
+      patientsDetails = data;
+  
+      var query2 = `SELECT * from treatmentsHistory where patientid = '`+id+`'`;
+      console.log(query2);
+////////////////////////////////////////////
+        client.query(query2).then(results => {
+          var resultsFound = results.rowCount;
+          console.log(results);
+          if (resultsFound >= 1){
+            var history = results.rows;
+            console.log(history); 
+            console.log("hiiiiiiiiiiii")
+            console.log(history[0]['treatment_time']); 
+           
+            console.log("bbbbbbbbbbbbbbbbbiiii")
+            console.log(history[0]['treatment_time']); 
+            patientsDetails['history'] = history;
+            console.log(patientsDetails)
+            
+            res.status(200);
+            res.json(patientsDetails);
+          }
+          else{
+            res.writeHead(400);
+            res.end();
+          }
+          }).catch((error) => {
+          console.log(error);
+          console.error("DB failed in history attempt");
+        });
+
+    }
+    else{
+      res.writeHead(400);
+      res.end();
+    }
+    }).catch((error) => {
+      console.log(error);
+      console.error("DB failed in Login attempt");
+    });
+});
+
+
+/*add new patient */
 app.post('/patients', function(req, res){
   console.log("#####");
   console.log(req.body);
@@ -207,6 +297,9 @@ app.post('/patients', function(req, res){
     res.writeHead(400);
     res.end()
   });
+
+
+
 
   // console.log(req);
 
