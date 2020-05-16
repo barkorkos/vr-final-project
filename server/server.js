@@ -221,7 +221,6 @@ app.get('/patients', function(req, res){
   var id = req.query.id;
   var query1 = `SELECT * from patients where id = '`+id+`'`;
   console.log(query1);
-
   var patientsDetails;
 
   client.query(query1).then(results => {
@@ -274,9 +273,8 @@ app.get('/patients', function(req, res){
 
 
 /*add new patient */
+
 app.post('/patients', function(req, res){
-  console.log("#####");
-  console.log(req.body);
   var patient = req.body;
   var query = `INSERT INTO patients (id, first_name, last_name,height, birthday,
                          email_address, details, address, phone)
@@ -294,6 +292,7 @@ app.post('/patients', function(req, res){
     }
   ).catch(() => {
     console.error("DB failed in Login attempt");
+    //res.json({'error':'User already Exists'});
     res.writeHead(400);
     res.end()
   });
@@ -306,13 +305,51 @@ app.post('/patients', function(req, res){
 });
 
 
-// app.delete('/patients', function(req, res){
+app.patch('/terapists/:id', function(req, res){
+  var terapist = req.body;
+  console.log(terapist);
+  var query = `UPDATE terapists SET 
+                  first_name = '`+terapist.firstName+`',
+                  last_name = '`+ terapist.lastName+`',
+                  email = '`+terapist.email+`',
+                  address = '`+terapist.address+`',
+                  phone = '`+terapist.phone+`'
+              WHERE user_id='`+terapist.id+`'`;
+  console.log(query);
+  client.query(query).then(results => {
+    console.log(results);
+    res.status(200)
+    res.json(terapist);
+    }
+  ).catch(() => {
+    console.error("DB failed in Login attempt");
+    //res.json({'error':'User already Exists'});
+    res.writeHead(400);
+    res.end()
+  });
 
+});
 
-// });
+app.get('/terapists', function(req, res){
+  terapist_id = req.query.id;
+  var query = `SELECT * FROM terapists WHERE user_id = '`+terapist_id+`'`;
+  console.log(query);
+  client.query(query).then(results => {
+    console.log(results);
+    res.status(200)
+    res.json(results.rows[0]);
+    }
+  ).catch(() => {
+    console.error("DB failed in Login attempt");
+    //res.json({'error':'User already Exists'});
+    res.writeHead(400);
+    res.end()
+  });
 
-// app.listen(port);
-// console.log('Server started! At http://localhost:' + port );  
+  // console.log(req);
+
+});
+
 var server = app.listen(port, function () {
   console.log('Node server is running..');
 });
