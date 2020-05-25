@@ -89,13 +89,21 @@ app.post('/savePlayerResults', function(req, res){
                where  PatientInTherapy.patientid = '`+req.body.id+`' and PatientInTherapy.hand_in_therapy='`+req.body.hand_in_therapy+`' and PatientInTherapy.game_name='`+req.body.game_name+`';`
   console.log(query);
 
-
   client.query(query).then(results => {
 
       console.log(results); 
+      var query2 = `INSERT INTO treatmentshistory (patientid, game_name, hand_in_therapy, treatment_time, treatment_duration, bubble_timeout)
+                    values ('`+req.body.id+`', 'bubbles', '`+req.body.hand_in_therapy+`', '`+Date.now()+`', `+req.body.game_duraion+`, `+req.body.bubble_timeout+`);`
+      
+      client.query(query2).then(results2 => {
+        res.writeHead(200);
+        res.end();
+      }).catch(()=>{
+        console.error("DB failed in Login attempt");
+        res.writeHead(400);
+        res.end()
+      })
 
-      res.writeHead(200);
-      res.end();
     }
 ).catch(() => {
   console.error("DB failed in Login attempt");
