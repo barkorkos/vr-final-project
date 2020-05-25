@@ -185,8 +185,6 @@ app.post('/savePlayerLastAppearnce', function(req, res){
 // });
 /*update patient details */
 app.patch('/patients/:id/', function(req, res){
-  console.log("###put##");
-  console.log(req.body);
   var patient = req.body;
   var query = `UPDATE patients 
                SET id = '`+patient.id+`', first_name = '`+patient.firstName+`',
@@ -374,10 +372,8 @@ app.post('/patients', function(req, res){
                         + patient.lastName +`',` + patient.height +`,'`
                         + patient.birthday+`','` + patient.email + `','`
                         + patient.comments+`','` + patient.address + `','` + patient.phone + `');`;
-  console.log(query);
 
   client.query(query).then(results => {
-    console.log(results);
     res.json(patient);
     res.writeHead(200);
     res.end();
