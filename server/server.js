@@ -90,12 +90,13 @@ app.post('/savePlayerResults', function(req, res){
   console.log(query);
 
   client.query(query).then(results => {
-
+      var datetime = new Date();
       console.log(results); 
       var query2 = `INSERT INTO treatmentshistory (patientid, game_name, hand_in_therapy, treatment_time, treatment_duration, bubble_timeout)
-                    values ('`+req.body.id+`', 'bubbles', '`+req.body.hand_in_therapy+`', '`+Date.now()+`', `+req.body.game_duraion+`, `+req.body.bubble_timeout+`);`
-      
+                    values ('`+req.body.id+`', 'bubbles', '`+req.body.hand_in_therapy+`', '`+datetime.toISOString()+`', `+req.body.game_duraion+`, `+req.body.bubble_timeout+`);`
+      console.log(query2);
       client.query(query2).then(results2 => {
+        console.log(results2);
         res.writeHead(200);
         res.end();
       }).catch(()=>{
