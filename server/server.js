@@ -179,10 +179,20 @@ app.post('/savePlayerLastAppearnce', function(req, res){
   
 });
 
-// app.get('/patients', function(req, res){
+
+/*login*/
+app.post('/login', function(req,res){
+  var terapist = req.body;
+  console.log(terapist);
+  console.log(terapist.id);
+  console.log(terapist.password);
+
+ 
+})
 
 
-// });
+
+
 /*update patient details */
 app.patch('/patients/:id/', function(req, res){
   var patient = req.body;
@@ -267,64 +277,77 @@ app.get('/patients', function(req, res){
 });
 
 /*start new treatment*/
-app.post('/treatment', function(req, res){
+app.post('/treatment', function (req, res) {
   console.log("@@***addNewTreatmenttttt***@@@");
   console.log(req.body);
   var treatment = req.body;
-  
-  var query1 = `select * from patientintherapy where patientid = '`+treatment.id+`' and hand_in_therapy = '`+treatment.patientDetails.newHand+`'`;
-  console.log(query1);
-
-  client.query(query1).then(results => {
+  var query = `select * from patients where id = '` + treatment.id + `'`;
+  client.query(query).then(results => {
     var resultsFound = results.rowCount;
-    console.log(results);
-    if (resultsFound == 1){
-      console.log("found an element, just updating!!!!");
-      var data = results.rows[0];
-     
-      var query2 = `UPDATE patientintherapy SET "isActive" = true,
-                                                 bubble_time_out = `+treatment.patientDetails.newBubbleTimeOut+` ,
-                                                 treatment_time = `+treatment.patientDetails.newDurationTime+`	
-                                            WHERE
-                                                 patientid = '`+treatment.id+`' and hand_in_therapy = '`+treatment.patientDetails.newHand+`'`;
-      console.log(query2);
-      client.query(query2).then(results => {
-        console.log(results);
-        res.status(200);
-        res.json(treatment);
-        }
-      ).catch(() => {
-        console.error("DB failed in update db");
-        //res.json({'error':'User already Exists'});
-        res.writeHead(400);
-        res.end()
-      });
+    if (resultsFound == 1) {
 
-    }
-    else
-    {
-      console.log("element was not update, need to insert to db!!!!!");
-      var query3 = `INSERT INTO patientintherapy (patientid, game_name, hand_in_therapy,"isActive", bubble_time_out, treatment_time, iterations_number)
-                    VALUES ('`+ treatment.id + `', 'bubbles', '`
-                             + treatment.patientDetails.newHand +`', true,`
-                             + treatment.patientDetails.newBubbleTimeOut +`,` + treatment.patientDetails.newDurationTime + `,0);`;
-      console.log(query3);
-      client.query(query3).then(results => {
-        console.log(results);
-        res.status(200);
-        res.json(treatment);
+      var query1 = `select * from patientintherapy where patientid = '` + treatment.id + `' and hand_in_therapy = '` + treatment.patientDetails.newHand + `'`;
+      console.log(query1);
+
+      client.query(query1).then(results => {
+        var resultsFound = results.rowCount;
+        if (resultsFound == 1) {
+          console.log("found an element, just updating!!!!");
+          var data = results.rows[0];
+
+          var query2 = `UPDATE patientintherapy SET "isActive" = true,
+                                                      bubble_time_out = `+ treatment.patientDetails.newBubbleTimeOut + ` ,
+                                                      treatment_time = `+ treatment.patientDetails.newDurationTime * 60 + `	
+                                                  WHERE
+                                                      patientid = '`+ treatment.id + `' and hand_in_therapy = '` + treatment.patientDetails.newHand + `'`;
+          console.log(query2);
+          client.query(query2).then(results => {
+            console.log(results);
+            res.status(200);
+            res.json(treatment);
+          }
+          ).catch(() => {
+            console.error("DB failed in update db");
+            //res.json({'error':'User already Exists'});
+            res.writeHead(400);
+            res.end()
+          });
+
         }
-      ).catch(() => {
-        console.error("DB failed in insert to db");
-        //res.json({'error':'User already Exists'});
-        res.writeHead(400);
-        res.end()
+        else {
+          console.log("element was not update, need to insert to db!!!!!");
+          var query3 = `INSERT INTO patientintherapy (patientid, game_name, hand_in_therapy,"isActive", bubble_time_out, treatment_time, iterations_number)
+                          VALUES ('`+ treatment.id + `', 'bubbles', '`
+            + treatment.patientDetails.newHand + `', true,`
+            + treatment.patientDetails.newBubbleTimeOut + `,` + treatment.patientDetails.newDurationTime * 60 + `,0);`;
+          console.log(query3);
+          client.query(query3).then(results => {
+            console.log(results);
+            res.status(200);
+            res.json(treatment);
+          }
+          ).catch(() => {
+            console.error("DB failed in insert to db");
+            //res.json({'error':'User already Exists'});
+            res.writeHead(400);
+            res.end()
+          });
+
+        }
+      }).catch((error) => {
+        console.log(error);
+        console.error("DB failed in selcet attempt");
       });
+    }
+    else{
+      res.status(200);
+      console.log("hereee in am")
+      res.json(null);
 
     }
   }).catch((error) => {
     console.log(error);
-    console.error("DB failed in selcet attempt");
+    console.error("DB failed in find user for start treatment attempt");
   });
 });
 
@@ -335,28 +358,46 @@ app.get('/treatment', function(req, res){
   console.log("*******@@treatment@@*********");
   console.log(req.query);
   var id = req.query.id;
-  var query1 = `SELECT * from treatmentshistory where patientid = '`+id+`' order by treatment_time desc`;
-  console.log(query1);
-
-  client.query(query1).then(results => {
+  var query = `select * from patients where id = '` + id + `'`;
+  client.query(query).then(results => {
     var resultsFound = results.rowCount;
     console.log(results);
     console.log(resultsFound);
-    if (resultsFound >=1){
-      var data = results.rows[0];
-      console.log(data);
-      res.status(200);
-      res.json(data);
+    if (resultsFound ==1)
+    {
+          var query1 = `SELECT * from treatmentshistory where patientid = '`+id+`' order by treatment_time desc`;
+          console.log(query1);
+
+          client.query(query1).then(results => {
+            var resultsFound = results.rowCount;
+            console.log(results);
+            console.log(resultsFound);
+            if (resultsFound >=1){
+              var data = results.rows[0];
+              console.log(data);
+              res.status(200);
+              res.json(data);
+            }
+            else{
+              res.status(200);
+              console.log("hereee in am")
+              res.json(null);
+            }
+          }).catch((error) => {
+              console.log(error);
+              console.error("DB failed in Login attempt");
+          });
     }
-    else{
-      res.status(200);
-      console.log("hereee in am")
-      res.json(null);
-    }
-  }).catch((error) => {
+     else{
+      res.writeHead(400);
+      res.end()
+       console.log("user is not existt!")
+       res.json(null);
+     }
+    }).catch((error) => {
       console.log(error);
-      console.error("DB failed in Login attempt");
-   });
+      console.error("DB failed in find user for search for treatment attempt");
+    });
 });
 
 
