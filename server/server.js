@@ -444,6 +444,8 @@ app.post('/patients', function(req, res){
 app.patch('/terapists/:id', function(req, res){
   var terapist = req.body;
   console.log(terapist);
+  if (terapist.firstName){
+  console.log("update details");
   var query = `UPDATE terapists SET 
                   first_name = '`+terapist.firstName+`',
                   last_name = '`+ terapist.lastName+`',
@@ -451,6 +453,14 @@ app.patch('/terapists/:id', function(req, res){
                   address = '`+terapist.address+`',
                   phone = '`+terapist.phone+`'
               WHERE user_id='`+terapist.id+`'`;
+  }
+  else if (terapist.newPassword){
+    console.log("change Password");
+    password = encryptPassword(terapist.newPassword);
+    var query = `UPDATE terapists SET 
+    password = '`+password+`'
+    WHERE user_id='`+terapist.id+`'`;
+  }
   console.log(query);
   client.query(query).then(results => {
     console.log(results);
@@ -471,9 +481,41 @@ app.get('/terapists', function(req, res){
   var query = `SELECT * FROM terapists WHERE user_id = '`+terapist_id+`'`;
   console.log(query);
   client.query(query).then(results => {
-    console.log(results);
-    res.status(200)
-    res.json(results.rows[0]);
+    // console.log(results);
+    terapist = results.rows[0];
+    // console.log(terapist);
+    terapist.password = decryptPassword(terapist.password);;
+    res.status(200);
+    res.json(terapist);
+    }
+  ).catch(() => {
+    console.error("DB failed in Login attempt");
+    //res.json({'error':'User already Exists'});
+    res.writeHead(400);
+    res.end()
+  });
+
+  // console.log(req);
+
+});
+
+
+app.post('/terapists', function(req, res){
+  var terapist = req.body;
+  console.log(terapist);
+  password = encryptPassword(terapist.newPassword);
+  console.log(password)
+
+  var query = `INSERT INTO terapists (user_id, first_name, last_name, email, phone, address, password)
+               VALUES ('`+terapist.id + `', '`+ terapist.firstName + `', '`
+                        + terapist.lastName +`','` + terapist.email +`','`
+                        + terapist.phone+`','` + terapist.address + `','`
+                        + password +`');`;
+  console.log(query); 
+  client.query(query).then(results => {
+    res.json(terapist);
+    res.writeHead(200);
+    res.end();
     }
   ).catch(() => {
     console.error("DB failed in Login attempt");
@@ -490,3 +532,15 @@ var server = app.listen(port, function () {
   console.log('Node server is running..');
 });
 
+
+function encryptPassword(password){
+  var ciphertext = CryptoJS.AES.encrypt(JSON.stringify(password), 'secret key 123');
+  var ciphertext= ciphertext.toString();
+  return ciphertext;
+}
+
+function decryptPassword(ciphertext){
+  var bytes  = CryptoJS.AES.decrypt(ciphertext, 'secret key 123');
+  var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+  return decryptedData;
+}
