@@ -89,13 +89,23 @@ app.post('/savePlayerResults', function(req, res){
                where  PatientInTherapy.patientid = '`+req.body.id+`' and PatientInTherapy.hand_in_therapy='`+req.body.hand_in_therapy+`' and PatientInTherapy.game_name='`+req.body.game_name+`';`
   console.log(query);
 
-
   client.query(query).then(results => {
-
+      var datetime = new Date();
       console.log(results); 
+      var query2 = `INSERT INTO treatmentshistory (patientid, game_name, hand_in_therapy, treatment_time, treatment_duration, bubble_timeout, learning_rate, discount_factor, random_explore, rewards_table, qtable, last_appearance)
+                    values ('`+req.body.id+`', 'bubbles', '`+req.body.hand_in_therapy+`', '`+datetime.toISOString()+`', `+req.body.game_duraion+`, `+req.body.bubble_timeout+`,`+req.body.learning_rate+`, `+req.body.discount_factor+`,`+req.body.random_explore+`, '`+
+                    req.body.rewards_table+`', '`+req.body.qtable+`', '`+req.body.last_appearance+`' );`
+      console.log(query2);
+      client.query(query2).then(results2 => {
+        console.log(results2);
+        res.writeHead(200);
+        res.end();
+      }).catch(()=>{
+        console.error("DB failed in Login attempt");
+        res.writeHead(400);
+        res.end()
+      })
 
-      res.writeHead(200);
-      res.end();
     }
 ).catch(() => {
   console.error("DB failed in Login attempt");
@@ -115,9 +125,6 @@ app.post('/savePlayerRewardTable', function(req, res){
 
 
   client.query(query).then(results => {
-
-      console.log(results);
-
       res.writeHead(200);
       res.end();
     }
