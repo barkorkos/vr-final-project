@@ -191,14 +191,14 @@ app.post('/savePlayerLastAppearnce', function(req, res){
 app.post('/login', function(req,res){
   var terapist = req.body;
   console.log(terapist);
-  console.log(terapist.id);
-  console.log(terapist.password);
 
+  var query = `select * from terapists where user_id = '`+terapist.id+`'`;
+  console.log(query);
+  client.query(query).then(results => {
+    console.log(results);
+  })
  
 })
-
-
-
 
 /*update patient details */
 app.patch('/patients/:id/', function(req, res){
