@@ -7,6 +7,7 @@ var nodemailer=require("nodemailer");
 
 
 var express = require('express');
+var jwt = require('jwt-simple');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var app = express();
@@ -14,6 +15,8 @@ var port = process.env.PORT || 8080;
 var fs = require('fs');
 const path = require('path');
 const { Client } = require('pg');
+
+app.set('jwtTokenSecret' , 'YOUR_SECRET_STRING');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -196,9 +199,48 @@ app.post('/login', function(req,res){
   console.log(query);
   client.query(query).then(results => {
     console.log(results);
-  })
+    var resultsFound = results.rowCount;
+    if(resultsFound == 1)
+    {
+      var data=results.rows[0];
+      password = data.password;
+      console.log(password);
+      var dec_password = decryptPassword(password);
+      if( dec_password == terapist.password)
+      {
+        //var expires = moment().add('days',7).valueOf();
+        console.log(dec_password);
+        var token = jwt.encode({
+          iss: terapist.id,
+          //exp: exoires
+        }, app.get('jwtTokenSecret'));
+
+        res.status(200);
+        res.json({
+          token : token,
+          //expires: expires,
+          user: terapist
+        
+        });
+      }
+      else{
+        console.log("wrong Password!!");
+        res.status(400);
+        res.json();
+      }
+    }
+    else{
+      console.log("user not exist!!");
+      res.status(400);
+      res.json();
+    }
+  }).catch(() => {
+    console.error("DB failed in Login attempt");
+    res.writeHead(400);
+    res.end()
+  });
  
-})
+});
 
 /*update patient details */
 app.patch('/patients/:id/', function(req, res){
