@@ -212,6 +212,7 @@ app.post('/login', function(req,res){
         console.log(dec_password);
         var token = jwt.encode({
           iss: terapist.id,
+          name: data.last_name +' '+ data.first_name,
           //exp: exoires
         }, app.get('jwtTokenSecret'));
 
