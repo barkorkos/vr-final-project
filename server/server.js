@@ -94,10 +94,10 @@ app.post('/savePlayerResults', function(req, res){
 
   client.query(query).then(results => {
       var datetime = new Date();
-      console.log(results); 
-      var query2 = `INSERT INTO treatmentshistory (patientid, game_name, hand_in_therapy, treatment_time, treatment_duration, bubble_timeout, learning_rate, discount_factor, random_explore, rewards_table, qtable, last_appearance)
+      
+      var query2 = `INSERT INTO treatmentshistory (patientid, game_name, hand_in_therapy, treatment_time, treatment_duration, bubble_timeout, learning_rate, discount_factor, random_explore, rewards_table, qtable, last_appearance, total_bubbles_table, poped_bubbles_table)
                     values ('`+req.body.id+`', 'bubbles', '`+req.body.hand_in_therapy+`', '`+datetime.toISOString()+`', `+req.body.game_duraion+`, `+req.body.bubble_timeout+`,`+req.body.learning_rate+`, `+req.body.discount_factor+`,`+req.body.random_explore+`, '`+
-                    req.body.rewards_table+`', '`+req.body.qtable+`', '`+req.body.last_appearance+`' );`
+                    req.body.rewards_table+`', '`+req.body.qtable+`', '`+req.body.last_appearance+`' , '`+req.body.total_bubbles_table+`' , '`+req.body.poped_bubbles_table+`');`
       console.log(query2);
       client.query(query2).then(results2 => {
         console.log(results2);
@@ -257,8 +257,8 @@ app.patch('/patients/:id/', function(req, res){
   console.log(query);
 
   client.query(query).then(results => {
-    console.log(results);
-
+    
+  
     res.status(200);
     res.json(patient);
     }
@@ -283,10 +283,10 @@ app.get('/patients', function(req, res){
 
   client.query(query1).then(results => {
     var resultsFound = results.rowCount;
-    console.log(results);
+   
     if (resultsFound == 1){
       var data = results.rows[0];
-      console.log(data);
+     
       patientsDetails = data;
   
       var query2 = `SELECT * from treatmentsHistory where patientid = '`+id+`'`;
@@ -294,15 +294,14 @@ app.get('/patients', function(req, res){
 ////////////////////////////////////////////
         client.query(query2).then(results => {
           var resultsFound = results.rowCount;
-          console.log(results);
+          
           if (resultsFound >= 0){
             var history = results.rows;
-            console.log(history); 
+             
             console.log("hiiiiiiiiiiii")
      
             patientsDetails['history'] = history;
-            console.log(patientsDetails)
-            
+                    
             res.status(200);
             res.json(patientsDetails);
           }
@@ -352,7 +351,7 @@ app.post('/treatment', function (req, res) {
                                                       patientid = '`+ treatment.id + `' and hand_in_therapy = '` + treatment.patientDetails.newHand + `'`;
           console.log(query2);
           client.query(query2).then(results => {
-            console.log(results);
+            
             res.status(200);
             res.json(treatment);
           }
@@ -372,7 +371,7 @@ app.post('/treatment', function (req, res) {
             + treatment.patientDetails.newBubbleTimeOut + `,` + treatment.patientDetails.newDurationTime * 60 + `,0);`;
           console.log(query3);
           client.query(query3).then(results => {
-            console.log(results);
+            
             res.status(200);
             res.json(treatment);
           }
@@ -411,7 +410,7 @@ app.get('/treatment', function(req, res){
   var query = `select * from patients where id = '` + id + `'`;
   client.query(query).then(results => {
     var resultsFound = results.rowCount;
-    console.log(results);
+  
     console.log(resultsFound);
     if (resultsFound ==1)
     {
@@ -420,11 +419,11 @@ app.get('/treatment', function(req, res){
 
           client.query(query1).then(results => {
             var resultsFound = results.rowCount;
-            console.log(results);
+            
             console.log(resultsFound);
             if (resultsFound >=1){
               var data = results.rows[0];
-              console.log(data);
+            
               res.status(200);
               res.json(data);
             }
@@ -506,7 +505,7 @@ app.patch('/terapists/:id', function(req, res){
   }
   console.log(query);
   client.query(query).then(results => {
-    console.log(results);
+   
     res.status(200)
     res.json(terapist);
     }
