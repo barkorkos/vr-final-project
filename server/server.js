@@ -586,3 +586,20 @@ function decryptPassword(ciphertext){
   var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
   return decryptedData;
 }
+
+function jsonTo3Dtable(table){
+  var n = parseInt(table.split(',').pop().split(':')[0].split('^').pop())+1
+  var dictionary = jsonToDictionary(table);
+  return dictionary;
+}
+
+function jsonToDictionary(table){
+  var items = table.split(',');
+  var dictionary= {};
+  for (var i=0 ; i<items.length ; i++)
+  {
+    var keyValue = items[i].split(':');
+    dictionary[keyValue[0]]=parseInt(keyValue[1]);
+  }
+  return dictionary;
+}
