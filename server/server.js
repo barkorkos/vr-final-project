@@ -404,6 +404,7 @@ app.post('/treatment', function (req, res) {
 
 /*get details of last treatment*/
 app.get('/treatment', function(req, res){
+  var notreat ="noTreat";
   console.log("*******@@treatment@@*********");
   console.log(req.query);
   var id = req.query.id;
@@ -430,7 +431,7 @@ app.get('/treatment', function(req, res){
             else{
               res.status(200);
               console.log("hereee in am")
-              res.json(null);
+              res.json(notreat);
             }
           }).catch((error) => {
               console.log(error);
